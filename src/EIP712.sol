@@ -15,7 +15,16 @@ contract EIP712 {
     }
     
     function _toTypedDataHash(bytes32 structHash) public returns (bytes32 data) {
-        return keccak256(abi.encodePacked(structHash));
+
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, "\x19\x01")
+            mstore(add(ptr, 0x02), DOMAIN_SEPARATOR.offset)
+            mstore(add(ptr, 0x22), structHash)
+            data := keccak256(ptr, 0x42)
+        }
+        //return keccak256(abi.encodePacked(structHash));
     }
+    
 
 }
